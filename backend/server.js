@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5173' // ou l'URL exacte de votre frontend
+  origin: 'https://juvenal.onrender.com' // ou l'URL exacte de votre frontend
 }));
 app.use(bodyParser.json());
 
