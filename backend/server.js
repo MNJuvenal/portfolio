@@ -5,10 +5,14 @@ const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5173' // ou l'URL exacte de votre frontend
+  origin: 'https://juvenal.onrender.com' // ou l'URL exacte de votre frontend
 }));
 app.use(bodyParser.json());
 
