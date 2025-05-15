@@ -2,7 +2,8 @@ import './style.css';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const BACKEND_URL = 'https://portfolio-hwg8.onrender.com'; // URL de votre backend sur Render
+const BACKEND_URL = 'http://localhost:5000'; // URL de votre serveur backend
+
 function ProjectsPage() {
   const [comments, setComments] = useState({}); // Stocke les commentaires par projet
   const [newComments, setNewComments] = useState({}); // Stocke les commentaires en cours de saisie par projet
