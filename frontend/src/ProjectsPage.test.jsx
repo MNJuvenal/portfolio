@@ -18,7 +18,7 @@ describe('ProjectsPage Component', () => {
 
   it('should fetch and display comments', async () => {
     const comments = [{ id: 1, text: 'Test comment' }];
-    mock.onGet('http://localhost:5000/comments/project1').reply(200, comments);
+    mock.onGet('https://portfolio-hwg8.onrender.com/comments/project1').reply(200, comments);
 
     render(<ProjectsPage />);
     expect(await screen.findByText(/Test comment/i)).toBeInTheDocument();
