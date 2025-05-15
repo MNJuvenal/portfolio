@@ -1,16 +1,16 @@
 {
   "name": "juvenal",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "main": "index.html",
   "scripts": {
-    "start": "vite", 
+    "start": "vite preview", 
     "dev": "vite", 
     "build": "vite build", 
-    "preview": "vite preview", 
+    "preview": "vite preview",
     "test": "react-scripts test"
   },
   "dependencies": {
-   
-    "axios": "^1.4.0",
+    "axios": "^1.9.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.6.0"
@@ -19,8 +19,7 @@
     "@vitejs/plugin-react": "^4.0.0",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.3",
-    
+    "tailwindcss": "^4.1.6",
     "vite": "^6.3.5"
   }
 }
-
