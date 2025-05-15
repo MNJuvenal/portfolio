@@ -1,13 +1,13 @@
 {
   "name": "portfolio-juvenal",
   "version": "1.0.0",
+  "main": "index.html",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    
-    "preview": "vite preview",
+    "start": "vite", 
+    "dev": "vite", 
+    "build": "vite build", 
+    "preview": "vite preview", 
     "test": "react-scripts test"
-    
   },
   "dependencies": {
     "nodemailer": "^7.0.3",
@@ -22,6 +22,5 @@
     "tailwindcss": "^4.1.6",
     "vite": "^6.3.5"
   }
- 
 }
 
