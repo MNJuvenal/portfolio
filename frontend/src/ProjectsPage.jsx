@@ -5,66 +5,70 @@ import axios from 'axios';
 const BACKEND_URL = 'http://localhost:5000'; // URL de votre serveur backend
 
 function ProjectsPage() {
-  const [comments, setComments] = useState({});
-  const [newComment, setNewComment] = useState('');
-  const [reply, setReply] = useState({}); // Stocke les réponses par commentaire
+  const [comments, setComments] = useState({}); // Stocke les commentaires par projet
+  const [newComments, setNewComments] = useState({}); // Stocke les commentaires en cours de saisie par projet
+  const [authors, setAuthors] = useState({}); // Stocke les auteurs par projet
 
   // Fonction pour récupérer les commentaires d'un projet
   const fetchComments = async (projectId) => {
     try {
       const response = await axios.get(`${BACKEND_URL}/comments/${projectId}`);
-      setComments((prev) => ({ ...prev, [projectId]: response.data }));
+      setComments((prev) => ({
+        ...prev,
+        [projectId]: response.data, // Met à jour uniquement les commentaires du projet spécifique
+      }));
     } catch (error) {
       console.error('Erreur lors de la récupération des commentaires', error);
     }
   };
 
+  // Fonction pour soumettre un nouveau commentaire
   const handleCommentSubmit = async (e, projectId) => {
     e.preventDefault();
-  
+
     // Validation des données
-    if (!newComment.trim()) {
-      alert("Le commentaire ne peut pas être vide !");
+    if (!newComments[projectId]?.trim() || !authors[projectId]?.trim()) {
+      alert("Le commentaire et l'auteur ne peuvent pas être vides !");
       return;
     }
-  
+
     try {
       const response = await axios.post(`${BACKEND_URL}/comments`, {
         projectId,
-        text: newComment,
-        email: userEmail, // Utilisez un email dynamique
+        text: newComments[projectId],
+        author: authors[projectId],
       });
-  
+
+      // Met à jour les commentaires pour ce projet
       setComments((prev) => ({
         ...prev,
         [projectId]: [...(prev[projectId] || []), response.data],
       }));
-  
-      setNewComment('');
+
+      // Réinitialise les champs de saisie pour ce projet
+      setNewComments((prev) => ({
+        ...prev,
+        [projectId]: '',
+      }));
+      setAuthors((prev) => ({
+        ...prev,
+        [projectId]: '',
+      }));
     } catch (error) {
       console.error("Erreur lors de l'envoi du commentaire :", error);
-      alert("Une erreur s'est produite lors de l'envoi du commentaire.");
     }
   };
 
-  // Fonction pour soumettre une réponse à un commentaire
-  const handleReplySubmit = async (e, commentId, projectId) => {
-    e.preventDefault();
+  // Fonction pour supprimer un commentaire
+  const handleDeleteComment = async (commentId, projectId) => {
     try {
-      const response = await axios.post(`${BACKEND_URL}/comments/${commentId}/reply`, {
-        text: reply[commentId],
-      });
-      setComments((prev) => {
-        const updatedComments = prev[projectId].map((comment) =>
-          comment.id === commentId
-            ? { ...comment, replies: [...comment.replies, response.data] }
-            : comment
-        );
-        return { ...prev, [projectId]: updatedComments };
-      });
-      setReply((prev) => ({ ...prev, [commentId]: '' }));
+      await axios.delete(`${BACKEND_URL}/comments/${commentId}`);
+      setComments((prev) => ({
+        ...prev,
+        [projectId]: prev[projectId].filter((comment) => comment.id !== commentId),
+      }));
     } catch (error) {
-      console.error('Erreur lors de l\'envoi de la réponse', error);
+      console.error("Erreur lors de la suppression du commentaire :", error);
     }
   };
 
@@ -77,22 +81,39 @@ function ProjectsPage() {
   return (
     <section className="projects">
       <h1 className="text-4xl font-bold text-center my-12">Mes Projets</h1>
-      
+
       {/* Projet 1 */}
       <div className="project-card">
         <h3>Projet 1 : Automate à Pile</h3>
         <p>
-          Ce projet implémente un automate à pile en C. Il permet de reconnaître des mots de la forme b^n.a^n. 
+          Ce projet implémente un automate à pile en C. Il permet de reconnaître des mots de la forme b^n.a^n.
           <br />
           <strong>Technologies :</strong> C, Makefile
         </p>
         <div className="comments-section">
           <h4>Commentaires / Questions</h4>
           <form onSubmit={(e) => handleCommentSubmit(e, 'project1')} className="comment-form">
+            <input
+              type="text"
+              placeholder="Votre nom"
+              value={authors['project1'] || ''}
+              onChange={(e) =>
+                setAuthors((prev) => ({
+                  ...prev,
+                  project1: e.target.value,
+                }))
+              }
+              required
+            />
             <textarea
               placeholder="Posez une question ou laissez un commentaire..."
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
+              value={newComments['project1'] || ''}
+              onChange={(e) =>
+                setNewComments((prev) => ({
+                  ...prev,
+                  project1: e.target.value,
+                }))
+              }
               required
             ></textarea>
             <button type="submit">Envoyer</button>
@@ -100,23 +121,8 @@ function ProjectsPage() {
           <ul>
             {comments['project1']?.map((comment) => (
               <li key={comment.id}>
-                {comment.text}
-                <ul>
-                  {comment.replies.map((reply) => (
-                    <li key={reply.id}>{reply.text}</li>
-                  ))}
-                </ul>
-                <form onSubmit={(e) => handleReplySubmit(e, comment.id, 'project1')}>
-                  <textarea
-                    placeholder="Répondre..."
-                    value={reply[comment.id] || ''}
-                    onChange={(e) =>
-                      setReply((prev) => ({ ...prev, [comment.id]: e.target.value }))
-                    }
-                    required
-                  ></textarea>
-                  <button type="submit">Répondre</button>
-                </form>
+                <strong>{comment.author} :</strong> {comment.text}
+                <button onClick={() => handleDeleteComment(comment.id, 'project1')}>Supprimer</button>
               </li>
             ))}
           </ul>
@@ -134,10 +140,27 @@ function ProjectsPage() {
         <div className="comments-section">
           <h4>Commentaires / Questions</h4>
           <form onSubmit={(e) => handleCommentSubmit(e, 'project2')} className="comment-form">
+            <input
+              type="text"
+              placeholder="Votre nom"
+              value={authors['project2'] || ''}
+              onChange={(e) =>
+                setAuthors((prev) => ({
+                  ...prev,
+                  project2: e.target.value,
+                }))
+              }
+              required
+            />
             <textarea
               placeholder="Posez une question ou laissez un commentaire..."
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
+              value={newComments['project2'] || ''}
+              onChange={(e) =>
+                setNewComments((prev) => ({
+                  ...prev,
+                  project2: e.target.value,
+                }))
+              }
               required
             ></textarea>
             <button type="submit">Envoyer</button>
@@ -145,23 +168,8 @@ function ProjectsPage() {
           <ul>
             {comments['project2']?.map((comment) => (
               <li key={comment.id}>
-                {comment.text}
-                <ul>
-                  {comment.replies.map((reply) => (
-                    <li key={reply.id}>{reply.text}</li>
-                  ))}
-                </ul>
-                <form onSubmit={(e) => handleReplySubmit(e, comment.id, 'project2')}>
-                  <textarea
-                    placeholder="Répondre..."
-                    value={reply[comment.id] || ''}
-                    onChange={(e) =>
-                      setReply((prev) => ({ ...prev, [comment.id]: e.target.value }))
-                    }
-                    required
-                  ></textarea>
-                  <button type="submit">Répondre</button>
-                </form>
+                <strong>{comment.author} :</strong> {comment.text}
+                <button onClick={() => handleDeleteComment(comment.id, 'project2')}>Supprimer</button>
               </li>
             ))}
           </ul>

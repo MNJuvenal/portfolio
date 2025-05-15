@@ -2,26 +2,18 @@ require('dotenv').config(); // Charge les variables d'environnement
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173' // ou l'URL exacte de votre frontend
+}));
 app.use(bodyParser.json());
 
 // Simuler une base de données en mémoire
 let comments = [];
-
-// Configurez Nodemailer
-const transporter = nodemailer.createTransport({
-  service: 'gmail', // Utilisez votre service email (par exemple, Gmail)
-  auth: {
-    user: process.env.EMAIL, // Charge l'email depuis les variables d'environnement
-    pass: process.env.EMAIL_PASSWORD, // Charge le mot de passe depuis les variables d'environnement
-  },
-});
 
 // Route pour récupérer les commentaires d'un projet
 app.get('/comments/:projectId', (req, res) => {
@@ -32,37 +24,31 @@ app.get('/comments/:projectId', (req, res) => {
 
 // Route pour ajouter un commentaire
 app.post('/comments', (req, res) => {
-  const { projectId, text, email } = req.body;
-  const newComment = { id: Date.now(), projectId, text, email, replies: [] };
+  const { projectId, text, author } = req.body;
+
+  if (!projectId || !text || !author) {
+    return res.status(400).json({ error: 'Données manquantes (projectId, text, author requis)' });
+  }
+
+  const newComment = { id: Date.now(), projectId, text, author, replies: [] };
   comments.push(newComment);
 
-  // Envoyer un email de notification
-  const mailOptions = {
-    from: process.env.EMAIL,
-    to: process.env.EMAIL, // Votre email pour recevoir les notifications
-    subject: 'Nouveau commentaire reçu',
-    text: `Un nouveau commentaire a été ajouté au projet ${projectId} :\n\n${text}`,
-  };
-
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error('Erreur lors de l\'envoi de l\'email :', error);
-    } else {
-      console.log('Email envoyé :', info.response);
-    }
-  });
-
+  console.log('Nouveau commentaire ajouté :', newComment);
   res.status(201).json(newComment);
 });
 
 // Route pour répondre à un commentaire
 app.post('/comments/:id/reply', (req, res) => {
   const { id } = req.params;
-  const { text } = req.body;
+  const { text, author } = req.body;
+
+  if (!text || !author) {
+    return res.status(400).json({ error: 'Données manquantes (text et author requis)' });
+  }
 
   const comment = comments.find((comment) => comment.id === parseInt(id));
   if (comment) {
-    const reply = { id: Date.now(), text };
+    const reply = { id: Date.now(), text, author };
     comment.replies.push(reply);
     res.status(201).json(reply);
   } else {
@@ -70,8 +56,23 @@ app.post('/comments/:id/reply', (req, res) => {
   }
 });
 
+// Route pour supprimer un commentaire
+app.delete('/comments/:id', (req, res) => {
+  const { id } = req.params;
+
+  const commentIndex = comments.findIndex((comment) => comment.id === parseInt(id));
+  if (commentIndex !== -1) {
+    const deletedComment = comments.splice(commentIndex, 1);
+    console.log('Commentaire supprimé :', deletedComment);
+    res.status(200).json({ message: 'Commentaire supprimé avec succès' });
+  } else {
+    res.status(404).json({ error: 'Commentaire non trouvé' });
+  }
+});
+
+// Route par défaut
 app.get('/', (req, res) => {
-  res.send('Bienvenue sur le backend de votre application il tourne actuelement !) !');
+  res.send('Bienvenue sur le backend de votre application il tourne actuellement !) !');
 });
 
 // Exporter l'application pour les tests
