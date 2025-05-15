@@ -1,0 +1,87 @@
+/* Styles de base */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  scroll-behavior: smooth;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+header {
+  background-color: #333;
+  color: #fff;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+header .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+header .navbar {
+  display: flex;
+}
+
+header .navbar a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 1rem;
+  font-size: 1rem;
+}
+
+header .navbar a:hover {
+  text-decoration: underline;
+}
+
+section {
+  padding: 6rem 2rem 2rem; /* Ajout d'un espace pour compenser l'en-tête fixe */
+}
+
+h1, h2, h3 {
+  color: #333;
+}
+
+a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.home {
+  background-image: url('src/images/profile1.jpeg'); /* Chemin vers votre image */
+  background-size: cover; /* L'image couvre toute la section */
+  background-position: center; /* Centrer l'image */
+  background-repeat: no-repeat; /* Pas de répétition */
+  height: 100vh; /* La section prend toute la hauteur de la fenêtre */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ffffff; /* Texte blanc pour contraster avec l'image */
+  text-align: center;
+}
