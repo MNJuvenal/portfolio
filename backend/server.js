@@ -12,7 +12,7 @@ app.listen(PORT, () => {
 
 // Middleware
 app.use(cors({
-  origin: 'https://juvenal.onrender.com' // ou l'URL exacte de votre frontend
+  origin: 'https://portfolio-9e70.onrender.com' // ou l'URL exacte de votre frontend
 }));
 app.use(bodyParser.json());
 
