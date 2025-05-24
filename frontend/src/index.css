@@ -127,3 +127,39 @@ home-content h1, .home-content h3, .home-content p {
       border-color: white;
   }
 }
+
+/* Styles globaux */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  scroll-behavior: smooth;
+  background-color: black; /* Fond noir */
+  color: white; /* Texte blanc */
+}
+
+h1, h2, h3, p, a {
+  color: white; /* Texte blanc pour les titres, paragraphes et liens */
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  background-color: white; /* Bouton blanc */
+  color: black; /* Texte noir sur le bouton */
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #333; /* Bouton gris foncé au survol */
+  color: white;
+}
+
+section {
+  padding: 6rem 2rem 2rem; /* Ajout d'un espace pour compenser l'en-tête fixe */
+}
