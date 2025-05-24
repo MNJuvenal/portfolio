@@ -2,8 +2,7 @@ import './style.css';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'; // Replace with your default backend URL
 
 function ProjectsPage() {
   const [comments, setComments] = useState({}); // Stocke les commentaires par projet
