@@ -1,5 +1,6 @@
 import './style.css';
-
+import profileImage from './profile1.jpeg';
+e
 function HomePage() {
   return (
     <section className="home" id="home" style={{ backgroundColor: 'white' }}>
@@ -17,7 +18,7 @@ function HomePage() {
         </div>
       </div>
       <div className="home-img">
-        <img src="/src/images/profile1.jpeg" alt="Juvenal" />
+        <img src={profileImage} alt="Juvenal" />
       </div>
     </section>
   );
