@@ -85,3 +85,45 @@ button:hover {
   color: #fff; /* Texte blanc pour contraster avec l'image */
   text-align: center;
 }
+home-content h1, .home-content h3, .home-content p {
+  animation: moveText 5s linear infinite;
+}
+
+@keyframes moveText {
+  0% {
+      transform: translateX(0);
+  }
+  50% {
+      transform: translateX(20px);
+  }
+  100% {
+      transform: translateX(0);
+  }
+}
+/* filepath: /home/juve/Documents/update portfolio/portfolio/frontend/src/style.css */
+
+.typewriter h1 {
+  overflow: hidden; /* Cache le texte qui dépasse */
+  border-right: 2px solid white; /* Curseur clignotant */
+  white-space: nowrap; /* Empêche le texte de passer à la ligne */
+  margin: 0 auto;
+  animation: typing 4s steps(30, end), blink 0.5s step-end infinite;
+}
+
+@keyframes typing {
+  from {
+      width: 0;
+  }
+  to {
+      width: 100%;
+  }
+}
+
+@keyframes blink {
+  from, to {
+      border-color: transparent;
+  }
+  50% {
+      border-color: white;
+  }
+}
