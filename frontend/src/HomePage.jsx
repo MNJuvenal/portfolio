@@ -1,6 +1,6 @@
 import './style.css';
 import profileImage from './profile1.jpeg';
-e
+
 function HomePage() {
   return (
     <section className="home" id="home" style={{ backgroundColor: 'white' }}>
