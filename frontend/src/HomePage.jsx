@@ -1,5 +1,5 @@
 import './style.css';
-import profileImage from './profile1.jpeg';
+import profileImage from './images/profile1.jpeg';
 
 function HomePage() {
   return (
