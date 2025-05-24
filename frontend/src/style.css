@@ -136,3 +136,37 @@ body {
 .home-img img:hover {
   box-shadow: 0 0 50px var(--main-color), 0 0 100px var(--main-color);
 }
+
+.contact-section {
+  padding: 2rem;
+  background-color: var(--second-bg-color);
+  color: var(--text-color);
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.contact-section h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--main-color);
+}
+
+.contact-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.contact-section li {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.contact-section a {
+  color: var(--main-color);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.contact-section a:hover {
+  color: var(--text-color);
+}
