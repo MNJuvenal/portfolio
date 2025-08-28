@@ -1,6 +1,7 @@
 import './style.css';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { trackEvent, sendEmailNotification } from './analytics';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://portfolio-hwg8.onrender.com';
 
@@ -91,6 +92,17 @@ function ProjectsPage() {
       });
 
       console.log('Commentaire envoyé avec succès:', response.data);
+
+      // Tracker l'événement dans Google Analytics
+      trackEvent('comment_submitted', 'Projects', projectId);
+      
+      // Envoyer une notification email
+      await sendEmailNotification('comment', {
+        projectId,
+        author: authors[projectId],
+        text: newComments[projectId],
+        timestamp: new Date().toISOString(),
+      });
 
       // Met à jour les commentaires pour ce projet
       setComments((prev) => ({

@@ -2,9 +2,29 @@ require('dotenv').config(); // Charge les variables d'environnement
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Configuration de l'envoi d'emails
+const transporter = nodemailer.createTransporter({
+  service: 'gmail', // ou votre service email préféré
+  auth: {
+    user: process.env.EMAIL_USER || 'votre-email@gmail.com', // Votre email
+    pass: process.env.EMAIL_PASS || 'votre-mot-de-passe-app' // Mot de passe d'application Gmail
+  }
+});
+
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'juvenal.moussavou@gmail.com'; // Votre email pour recevoir les notifications
+
+// Base de données en mémoire pour les statistiques
+let visitorStats = {
+  totalVisits: 0,
+  todayVisits: 0,
+  lastResetDate: new Date().toDateString(),
+  visitsToday: []
+};
 
 // Middleware
 app.use(cors({
@@ -59,6 +79,47 @@ app.post('/comments/:id/reply', (req, res) => {
   }
 });
 
+// Fonction pour réinitialiser les stats quotidiennes
+const resetDailyStats = () => {
+  const today = new Date().toDateString();
+  if (visitorStats.lastResetDate !== today) {
+    visitorStats.todayVisits = 0;
+    visitorStats.visitsToday = [];
+    visitorStats.lastResetDate = today;
+  }
+};
+
+// Route pour récupérer les statistiques de visiteurs
+app.get('/stats', (req, res) => {
+  resetDailyStats();
+  
+  // Compter les visiteurs uniques aujourd'hui
+  const uniqueVisitorsToday = new Set(visitorStats.visitsToday).size;
+  
+  res.json({
+    totalVisits: visitorStats.totalVisits,
+    todayVisits: uniqueVisitorsToday,
+    onlineNow: Math.floor(Math.random() * 3) + 1 // Simulation simple
+  });
+});
+
+// Route pour enregistrer une visite
+app.post('/visit', (req, res) => {
+  const visitorIP = req.ip || req.connection.remoteAddress || 'unknown';
+  
+  resetDailyStats();
+  
+  // Incrémenter le compteur total
+  visitorStats.totalVisits++;
+  
+  // Ajouter à la liste d'aujourd'hui (pour les visiteurs uniques)
+  visitorStats.visitsToday.push(visitorIP);
+  
+  console.log('📊 Nouvelle visite enregistrée. Total:', visitorStats.totalVisits);
+  
+  res.json({ success: true, totalVisits: visitorStats.totalVisits });
+});
+
 // Route pour supprimer un commentaire (réservé à l'admin)
 app.delete('/comments/:id', (req, res) => {
   const { id } = req.params;
@@ -84,6 +145,76 @@ app.delete('/comments/:id', (req, res) => {
     res.status(200).json({ message: 'Commentaire supprimé avec succès' });
   } else {
     res.status(404).json({ error: 'Commentaire non trouvé' });
+  }
+});
+
+// Fonction pour envoyer un email de notification
+const sendNotificationEmail = async (type, data) => {
+  try {
+    let subject, html;
+    
+    if (type === 'visit') {
+      subject = `🎯 Nouvelle visite sur votre portfolio !`;
+      html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #4a90e2;">👋 Nouvelle visite sur votre portfolio !</h2>
+          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <p><strong>📅 Date :</strong> ${new Date(data.timestamp).toLocaleString('fr-FR')}</p>
+            <p><strong>🌐 Page visitée :</strong> ${data.url}</p>
+            <p><strong>🔧 Navigateur :</strong> ${data.userAgent}</p>
+            <p><strong>📍 Référent :</strong> ${data.referrer || 'Accès direct'}</p>
+          </div>
+          <p style="color: #666;">Votre portfolio attire de nouveaux visiteurs ! 🚀</p>
+        </div>
+      `;
+    } else if (type === 'comment') {
+      subject = `💬 Nouveau commentaire sur "${data.projectId}" !`;
+      html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #28a745;">💬 Nouveau commentaire !</h2>
+          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <p><strong>👤 Auteur :</strong> ${data.author}</p>
+            <p><strong>📝 Projet :</strong> ${data.projectId}</p>
+            <p><strong>💭 Commentaire :</strong></p>
+            <div style="background: white; padding: 15px; border-left: 4px solid #28a745; margin: 10px 0;">
+              "${data.text}"
+            </div>
+            <p><strong>📅 Date :</strong> ${new Date(data.timestamp).toLocaleString('fr-FR')}</p>
+            <p><strong>🌐 URL :</strong> ${data.url}</p>
+          </div>
+          <p style="color: #666;">Quelqu'un s'intéresse à vos projets ! 👏</p>
+        </div>
+      `;
+    }
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: ADMIN_EMAIL,
+      subject: subject,
+      html: html
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`✅ Email de notification envoyé pour : ${type}`);
+  } catch (error) {
+    console.error('❌ Erreur envoi email:', error);
+  }
+};
+
+// Route pour recevoir les notifications
+app.post('/notify', async (req, res) => {
+  try {
+    const { type, data } = req.body;
+    
+    console.log(`📧 Notification reçue - Type: ${type}`);
+    
+    // Envoyer l'email de notification
+    await sendNotificationEmail(type, data);
+    
+    res.status(200).json({ message: 'Notification envoyée avec succès' });
+  } catch (error) {
+    console.error('Erreur notification:', error);
+    res.status(500).json({ error: 'Erreur lors de l\'envoi de la notification' });
   }
 });
 
