@@ -8,7 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Configuration de l'envoi d'emails
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
   service: 'gmail', // ou votre service email préféré
   auth: {
     user: process.env.EMAIL_USER || 'votre-email@gmail.com', // Votre email
