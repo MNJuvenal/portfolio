@@ -5,14 +5,13 @@ const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-
 
 // Middleware
 app.use(cors({
-  origin: 'https://portfolio-9e70.onrender.com' // ou l'URL exacte de votre frontend
+  origin: true, // Temporaire: autorise toutes les origines pour les tests
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(bodyParser.json());
 
@@ -60,14 +59,28 @@ app.post('/comments/:id/reply', (req, res) => {
   }
 });
 
-// Route pour supprimer un commentaire
+// Route pour supprimer un commentaire (réservé à l'admin)
 app.delete('/comments/:id', (req, res) => {
   const { id } = req.params;
+  const authHeader = req.headers.authorization;
+  
+  // Vérifier l'authentification admin
+  const adminPassword = 'Gloireadri_2023@'; // Mot de passe administrateur
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Token d\'authentification requis' });
+  }
+  
+  const token = authHeader.substring(7); // Enlever "Bearer "
+  
+  if (token !== adminPassword) {
+    return res.status(401).json({ error: 'Token d\'authentification invalide' });
+  }
 
   const commentIndex = comments.findIndex((comment) => comment.id === parseInt(id));
   if (commentIndex !== -1) {
     const deletedComment = comments.splice(commentIndex, 1);
-    console.log('Commentaire supprimé :', deletedComment);
+    console.log('Commentaire supprimé par admin :', deletedComment);
     res.status(200).json({ message: 'Commentaire supprimé avec succès' });
   } else {
     res.status(404).json({ error: 'Commentaire non trouvé' });

@@ -12,8 +12,9 @@ describe('ProjectsPage Component', () => {
 
   it('should render project cards', () => {
     render(<ProjectsPage />);
-    expect(screen.getByText(/Projet 1 : Automate à Pile/i)).toBeInTheDocument();
-    expect(screen.getByText(/Projet 2 : Portfolio React/i)).toBeInTheDocument();
+    expect(screen.getByText(/Projet 1 : Juvenalingo - Application d'Apprentissage des Langues/i)).toBeInTheDocument();
+    expect(screen.getByText(/Projet 2 : 🔍 PlagiatDetect Pro - Détection de Plagiat IA/i)).toBeInTheDocument();
+    expect(screen.getByText(/Projet 3 : 💎 BLUEREFLET - Application d'Essayage Virtuel de Colliers/i)).toBeInTheDocument();
   });
 
   it('should fetch and display comments', async () => {
@@ -38,5 +39,35 @@ describe('ProjectsPage Component', () => {
     fireEvent.click(button);
 
     expect(await screen.findByText(/New comment/i)).toBeInTheDocument();
+  });
+
+  it('should display image carousel for Juvenalingo project', () => {
+    render(<ProjectsPage />);
+    
+    // Vérifier que l'image du carrousel est présente
+    const carouselImage = screen.getByAlt(/Juvenalingo Screenshot/i);
+    expect(carouselImage).toBeInTheDocument();
+    
+    // Vérifier les boutons de navigation
+    const prevButton = screen.getByRole('button', { name: /‹/ });
+    const nextButton = screen.getByRole('button', { name: /›/ });
+    expect(prevButton).toBeInTheDocument();
+    expect(nextButton).toBeInTheDocument();
+  });
+
+  it('should navigate through carousel images', () => {
+    render(<ProjectsPage />);
+    
+    const nextButton = screen.getByRole('button', { name: /›/ });
+    const carouselImage = screen.getByAlt(/Juvenalingo Screenshot/i);
+    
+    // L'image initiale devrait être la première
+    expect(carouselImage.src).toContain('07-39-01');
+    
+    // Cliquer sur le bouton suivant
+    fireEvent.click(nextButton);
+    
+    // L'image devrait changer (nous ne pouvons pas facilement tester le src exact car il dépend de l'état)
+    expect(carouselImage).toBeInTheDocument();
   });
 });

@@ -2,13 +2,56 @@ import './style.css';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://portfolio-hwg8.onrender.com';
 
 
 function ProjectsPage() {
   const [comments, setComments] = useState({}); // Stocke les commentaires par projet
   const [newComments, setNewComments] = useState({}); // Stocke les commentaires en cours de saisie par projet
   const [authors, setAuthors] = useState({}); // Stocke les auteurs par projet
+  const [currentImageIndex, setCurrentImageIndex] = useState({}); // Index de l'image actuelle pour chaque projet
+
+  // Images du projet Juvenalingo
+  const juvenalingoImages = [
+    '/images/juvenalingo/Screenshot from 2025-08-28 07-39-01.png',
+    '/images/juvenalingo/Screenshot from 2025-08-28 07-39-30.png',
+    '/images/juvenalingo/Screenshot from 2025-08-28 07-39-43.png',
+    '/images/juvenalingo/Screenshot from 2025-08-28 07-39-49.png',
+    '/images/juvenalingo/Screenshot from 2025-08-28 07-39-55.png'
+  ];
+
+  // Images du projet PlagiatDetect Pro
+  const plagiatappImages = [
+    '/images/plagiatapp/Screenshot from 2025-08-28 08-15-55.png',
+    '/images/plagiatapp/Screenshot from 2025-08-28 08-16-35.png',
+    '/images/plagiatapp/Screenshot from 2025-08-28 08-42-28.png'
+  ];
+
+  // Images du projet BLUEREFLET
+  const bluerefletImages = [
+    '/images/bluereflet/Screenshot from 2025-08-28 08-53-33.png',
+    '/images/bluereflet/Screenshot from 2025-08-28 08-53-47.png',
+    '/images/bluereflet/Screenshot from 2025-08-28 08-53-57.png',
+    '/images/bluereflet/Screenshot from 2025-08-28 08-54-08.png',
+    '/images/bluereflet/Screenshot from 2025-08-28 08-54-30.png',
+    '/images/bluereflet/Screenshot from 2025-08-28 08-54-49.png',
+    '/images/bluereflet/Screenshot from 2025-08-28 08-56-41.png'
+  ];
+
+  // Fonction pour changer d'image dans le carrousel
+  const nextImage = (projectId, imagesArray) => {
+    setCurrentImageIndex((prev) => ({
+      ...prev,
+      [projectId]: ((prev[projectId] || 0) + 1) % imagesArray.length,
+    }));
+  };
+
+  const prevImage = (projectId, imagesArray) => {
+    setCurrentImageIndex((prev) => ({
+      ...prev,
+      [projectId]: ((prev[projectId] || 0) - 1 + imagesArray.length) % imagesArray.length,
+    }));
+  };
 
   // Fonction pour récupérer les commentaires d'un projet
   const fetchComments = async (projectId) => {
@@ -33,12 +76,21 @@ function ProjectsPage() {
       return;
     }
 
+    console.log('Tentative d\'envoi du commentaire:', {
+      projectId,
+      text: newComments[projectId],
+      author: authors[projectId],
+      backendUrl: BACKEND_URL
+    });
+
     try {
       const response = await axios.post(`${BACKEND_URL}/comments`, {
         projectId,
         text: newComments[projectId],
         author: authors[projectId],
       });
+
+      console.log('Commentaire envoyé avec succès:', response.data);
 
       // Met à jour les commentaires pour ce projet
       setComments((prev) => ({
@@ -55,21 +107,54 @@ function ProjectsPage() {
         ...prev,
         [projectId]: '',
       }));
+
+      alert('Commentaire ajouté avec succès !');
     } catch (error) {
       console.error("Erreur lors de l'envoi du commentaire :", error);
+      console.error("Détails de l'erreur:", error.response?.data || error.message);
+      
+      if (error.response?.status === 400) {
+        alert("Erreur : Données manquantes. Vérifiez que tous les champs sont remplis.");
+      } else if (error.code === 'NETWORK_ERROR' || error.message.includes('Network Error')) {
+        alert("Erreur de connexion : Impossible de contacter le serveur. Vérifiez votre connexion internet.");
+      } else {
+        alert("Erreur lors de l'ajout du commentaire. Veuillez réessayer plus tard.");
+      }
     }
   };
 
-  // Fonction pour supprimer un commentaire
+  // Fonction pour supprimer un commentaire (réservé à l'admin)
   const handleDeleteComment = async (commentId, projectId) => {
+    // Demander un mot de passe admin
+    const adminPassword = prompt("Mot de passe administrateur requis pour supprimer ce commentaire :");
+    
+    if (!adminPassword) {
+      return; // Annulé par l'utilisateur
+    }
+
     try {
-      await axios.delete(`${BACKEND_URL}/comments/${commentId}`);
+      await axios.delete(`${BACKEND_URL}/comments/${commentId}`, {
+        headers: {
+          'Authorization': `Bearer ${adminPassword}`
+        }
+      });
+      
       setComments((prev) => ({
         ...prev,
         [projectId]: prev[projectId].filter((comment) => comment.id !== commentId),
       }));
+      
+      alert('Commentaire supprimé avec succès !');
     } catch (error) {
       console.error("Erreur lors de la suppression du commentaire :", error);
+      
+      if (error.response?.status === 401) {
+        alert("Erreur : Mot de passe administrateur incorrect.");
+      } else if (error.response?.status === 404) {
+        alert("Erreur : Commentaire non trouvé.");
+      } else {
+        alert("Erreur lors de la suppression du commentaire. Veuillez réessayer plus tard.");
+      }
     }
   };
 
@@ -77,6 +162,7 @@ function ProjectsPage() {
   useEffect(() => {
     fetchComments('project1');
     fetchComments('project2');
+    fetchComments('project3');
   }, []);
 
   return (
@@ -85,12 +171,91 @@ function ProjectsPage() {
 
       {/* Projet 1 */}
       <div className="project-card">
-        <h3>Projet 1 : Automate à Pile</h3>
-        <p>
-          Ce projet implémente un automate à pile en C. Il permet de reconnaître des mots de la forme b^n.a^n.
-          <br />
-          <strong>Technologies :</strong> C, Makefile
-        </p>
+        <h3>Projet 1 : Juvenalingo - Application d'Apprentissage des Langues 🌐</h3>
+        
+        {/* Carrousel d'images */}
+        <div className="image-carousel">
+          <div className="carousel-container">
+            <button 
+              className="carousel-btn prev-btn"
+              onClick={() => prevImage('project1', juvenalingoImages)}
+            >
+              ‹
+            </button>
+            <img 
+              src={juvenalingoImages[currentImageIndex['project1'] || 0]} 
+              alt={`Juvenalingo Screenshot ${(currentImageIndex['project1'] || 0) + 1}`}
+              className="carousel-image"
+              onClick={() => nextImage('project1', juvenalingoImages)}
+            />
+            <button 
+              className="carousel-btn next-btn"
+              onClick={() => nextImage('project1', juvenalingoImages)}
+            >
+              ›
+            </button>
+          </div>
+          <div className="image-indicators">
+            {juvenalingoImages.map((_, index) => (
+              <button
+                key={index}
+                className={`indicator ${index === (currentImageIndex['project1'] || 0) ? 'active' : ''}`}
+                onClick={() => setCurrentImageIndex(prev => ({ ...prev, project1: index }))}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="project-description">
+          <p>
+            Application web moderne inspirée de Duolingo, intégrant une intelligence artificielle conversationnelle pour l'apprentissage interactif des langues (français, anglais, espagnol).
+          </p>
+          
+          <div className="project-links">
+            <a href="https://github.com/MNJuvenal/duolingo-beta" target="_blank" rel="noopener noreferrer" className="github-link">
+              📂 Voir le code source
+            </a>
+            <a href="https://duolingo-frontend.onrender.com" target="_blank" rel="noopener noreferrer" className="demo-link">
+              🚀 Tester l'application
+            </a>
+          </div>
+
+          <div className="features">
+            <h4>🚀 Fonctionnalités Clés :</h4>
+            <ul>
+              <li>Chat IA Multilingue : Conversation naturelle avec correction automatique</li>
+              <li>Synthèse Vocale : Text-to-Speech avec Azure Cognitive Services</li>
+              <li>Authentification JWT : Système de connexion sécurisé + mode invité</li>
+              <li>IA Autonome : Fonctionne entièrement hors ligne</li>
+              <li>Interface Responsive : Optimisée mobile et desktop</li>
+            </ul>
+          </div>
+
+          <div className="technologies">
+            <h4>🛠️ Technologies Utilisées :</h4>
+            <div className="tech-stack">
+              <div className="tech-category">
+                <strong>Backend :</strong>
+                <span>FastAPI (Python), SQLite, IA locale intégrée, JWT</span>
+              </div>
+              <div className="tech-category">
+                <strong>Frontend :</strong>
+                <span>React + Vite, Tailwind CSS, Axios, React Router</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="highlights">
+            <h4>🌟 Points Forts :</h4>
+            <ul>
+              <li>Architecture modulaire et scalable</li>
+              <li>IA conversationnelle fonctionnant sans dépendances externes</li>
+              <li>Support multilingue natif</li>
+              <li>Mode hors ligne complet</li>
+              <li>Interface utilisateur moderne et intuitive</li>
+            </ul>
+          </div>
+        </div>
         <div className="comments-section">
           <h4>Commentaires / Questions</h4>
           <form onSubmit={(e) => handleCommentSubmit(e, 'project1')} className="comment-form">
@@ -123,21 +288,122 @@ function ProjectsPage() {
             {comments['project1']?.map((comment) => (
               <li key={comment.id}>
                 <strong>{comment.author} :</strong> {comment.text}
-                <button onClick={() => handleDeleteComment(comment.id, 'project1')}>Supprimer</button>
+                <button 
+                  onClick={() => handleDeleteComment(comment.id, 'project1')} 
+                  className="delete-btn admin-only"
+                  title="Suppression réservée à l'administrateur"
+                >
+                  🗑️
+                </button>
               </li>
             ))}
           </ul>
         </div>
       </div>
 
-      {/* Projet 2 */}
+      {/* Projet 2 : PlagiatDetect Pro */}
       <div className="project-card">
-        <h3>Projet 2 : Portfolio React</h3>
-        <p>
-          Un portfolio moderne développé avec React et Tailwind CSS. Il est entièrement responsive et optimisé pour le SEO.
-          <br />
-          <strong>Technologies :</strong> React, Tailwind CSS
-        </p>
+        <h3>Projet 2 : 🔍 PlagiatDetect Pro - Détection de Plagiat IA</h3>
+        
+        {/* Carrousel d'images */}
+        <div className="image-carousel">
+          <div className="carousel-container">
+            <button 
+              className="carousel-btn prev-btn"
+              onClick={() => prevImage('project2', plagiatappImages)}
+            >
+              ‹
+            </button>
+            <img 
+              src={plagiatappImages[currentImageIndex['project2'] || 0]} 
+              alt={`PlagiatDetect Pro Screenshot ${(currentImageIndex['project2'] || 0) + 1}`}
+              className="carousel-image"
+              onClick={() => nextImage('project2', plagiatappImages)}
+            />
+            <button 
+              className="carousel-btn next-btn"
+              onClick={() => nextImage('project2', plagiatappImages)}
+            >
+              ›
+            </button>
+          </div>
+          <div className="image-indicators">
+            {plagiatappImages.map((_, index) => (
+              <button
+                key={index}
+                className={`indicator ${index === (currentImageIndex['project2'] || 0) ? 'active' : ''}`}
+                onClick={() => setCurrentImageIndex(prev => ({ ...prev, project2: index }))}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="project-description">
+          <p>
+            Plateforme avancée de détection de plagiat et reformulation de texte utilisant l'intelligence artificielle pour détecter le plagiat dans les textes et documents, avec fonctionnalités de reformulation intelligente.
+          </p>
+          
+          <div className="project-links">
+            <a href="https://github.com/MNJuvenal/plagiatapp" target="_blank" rel="noopener noreferrer" className="github-link">
+              📂 Voir le code source
+            </a>
+          </div>
+
+          <div className="features">
+            <h4>⚡ Fonctionnalités Clés :</h4>
+            <ul>
+              <li>Détection de plagiat avancée avec analyse sémantique et recherche web intelligente</li>
+              <li>Reformulation IA utilisant pipeline de traduction + paraphrase + retraduction</li>
+              <li>Support multi-formats : PDF, DOCX, texte brut</li>
+              <li>Interface moderne responsive avec glisser-déposer et animations</li>
+              <li>API RESTful complète avec documentation Swagger</li>
+            </ul>
+          </div>
+
+          <div className="technologies">
+            <h4>🛠️ Technologies Utilisées :</h4>
+            <div className="tech-stack">
+              <div className="tech-category">
+                <strong>Backend :</strong>
+                <span>Python, FastAPI, SentenceTransformers, T5 Paraphrase Model</span>
+              </div>
+              <div className="tech-category">
+                <strong>Frontend :</strong>
+                <span>React, Vite, CSS Modules, Axios</span>
+              </div>
+              <div className="tech-category">
+                <strong>IA/ML :</strong>
+                <span>Modèles de NLP pré-entraînés, analyse sémantique</span>
+              </div>
+              <div className="tech-category">
+                <strong>Déploiement :</strong>
+                <span>Docker, Render.com, CI/CD</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="highlights">
+            <h4>🏆 Points Forts Techniques :</h4>
+            <ul>
+              <li>Architecture microservices avec séparation frontend/backend</li>
+              <li>Intégration de modèles de Machine Learning pour le traitement du langage naturel</li>
+              <li>Pipeline de reformulation intelligent préservant le sens original</li>
+              <li>Sécurité robuste avec CORS, validation Pydantic et rate limiting</li>
+              <li>Déploiement automatisé en production avec monitoring</li>
+            </ul>
+          </div>
+
+          <div className="performance-stats">
+            <h4>📊 Performance :</h4>
+            <ul>
+              <li>Temps de réponse {'<'} 2s pour textes courts</li>
+              <li>Précision de détection ~85%</li>
+              <li>Réduction du score de similarité de 60-80% après reformulation</li>
+              <li>Support de fichiers jusqu'à 10MB</li>
+            </ul>
+          </div>
+        </div>
+
         <div className="comments-section">
           <h4>Commentaires / Questions</h4>
           <form onSubmit={(e) => handleCommentSubmit(e, 'project2')} className="comment-form">
@@ -170,7 +436,164 @@ function ProjectsPage() {
             {comments['project2']?.map((comment) => (
               <li key={comment.id}>
                 <strong>{comment.author} :</strong> {comment.text}
-                <button onClick={() => handleDeleteComment(comment.id, 'project2')}>Supprimer</button>
+                <button 
+                  onClick={() => handleDeleteComment(comment.id, 'project2')} 
+                  className="delete-btn admin-only"
+                  title="Suppression réservée à l'administrateur"
+                >
+                  🗑️
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* Projet 3 : BLUEREFLET */}
+      <div className="project-card">
+        <h3>Projet 3 : 💎 BLUEREFLET - Application d'Essayage Virtuel de Colliers</h3>
+        <div className="project-stage-info">
+          <span className="stage-badge">🎓 Projet de Stage</span>
+          <span className="company-name">Entreprise : BLUEREFLET</span>
+        </div>
+        
+        {/* Carrousel d'images */}
+        <div className="image-carousel">
+          <div className="carousel-container">
+            <button 
+              className="carousel-btn prev-btn"
+              onClick={() => prevImage('project3', bluerefletImages)}
+            >
+              ‹
+            </button>
+            <img 
+              src={bluerefletImages[currentImageIndex['project3'] || 0]} 
+              alt={`BLUEREFLET Screenshot ${(currentImageIndex['project3'] || 0) + 1}`}
+              className="carousel-image"
+              onClick={() => nextImage('project3', bluerefletImages)}
+            />
+            <button 
+              className="carousel-btn next-btn"
+              onClick={() => nextImage('project3', bluerefletImages)}
+            >
+              ›
+            </button>
+          </div>
+          <div className="image-indicators">
+            {bluerefletImages.map((_, index) => (
+              <button
+                key={index}
+                className={`indicator ${index === (currentImageIndex['project3'] || 0) ? 'active' : ''}`}
+                onClick={() => setCurrentImageIndex(prev => ({ ...prev, project3: index }))}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="project-description">
+          <p>
+            Application web d'intelligence artificielle révolutionnaire permettant l'essayage virtuel de colliers en temps réel sur des photos. Utilise des algorithmes de vision par ordinateur pour un rendu ultra-réaliste.
+          </p>
+          
+          <div className="project-links">
+            <a href="https://github.com/MNJuvenal/BR-online" target="_blank" rel="noopener noreferrer" className="github-link">
+              📂 Voir le code source
+            </a>
+            <a href="http://54.36.189.250/#demo" target="_blank" rel="noopener noreferrer" className="demo-link">
+              🚀 Tester l'application
+            </a>
+          </div>
+
+          <div className="features">
+            <h4>🚀 Fonctionnalités Principales :</h4>
+            <ul>
+              <li>IA de Détection Faciale : Reconnaissance automatique des visages avec MediaPipe</li>
+              <li>Positionnement Intelligent : Placement précis des colliers selon la morphologie</li>
+              <li>Rendu Réaliste : Ajustement automatique de la luminosité, ombres et reflets</li>
+              <li>Interface Intuitive : Upload par glisser-déposer et aperçu temps réel</li>
+              <li>Gestion d'Assets : Scan automatique et refresh dynamique</li>
+            </ul>
+          </div>
+
+          <div className="technologies">
+            <h4>🛠️ Stack Technique :</h4>
+            <div className="tech-stack">
+              <div className="tech-category">
+                <strong>Frontend :</strong>
+                <span>React + TypeScript, Vite, TailwindCSS</span>
+              </div>
+              <div className="tech-category">
+                <strong>Backend :</strong>
+                <span>Python Flask, OpenCV, MediaPipe, YOLO</span>
+              </div>
+              <div className="tech-category">
+                <strong>DevOps :</strong>
+                <span>Nginx + PM2, Scripts de déploiement automatisés</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="highlights">
+            <h4>🌟 Points Forts Techniques :</h4>
+            <ul>
+              <li>Architecture modulaire full-stack</li>
+              <li>Intelligence artificielle embarquée</li>
+              <li>Scripts d'automatisation complets</li>
+              <li>Documentation technique exhaustive</li>
+              <li>Déploiement production prêt</li>
+            </ul>
+          </div>
+
+          <div className="performance-stats">
+            <h4>🎯 Performances & Metrics :</h4>
+            <ul>
+              <li>Temps de traitement : 2-5 secondes par image</li>
+              <li>Précision de détection : {'>'} 85% (visage frontal)</li>
+              <li>Formats supportés : JPG, PNG, WEBP (jusqu'à 20MB)</li>
+              <li>Architecture scalable avec API REST complète</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="comments-section">
+          <h4>Commentaires / Questions</h4>
+          <form onSubmit={(e) => handleCommentSubmit(e, 'project3')} className="comment-form">
+            <input
+              type="text"
+              placeholder="Votre nom"
+              value={authors['project3'] || ''}
+              onChange={(e) =>
+                setAuthors((prev) => ({
+                  ...prev,
+                  project3: e.target.value,
+                }))
+              }
+              required
+            />
+            <textarea
+              placeholder="Posez une question ou laissez un commentaire..."
+              value={newComments['project3'] || ''}
+              onChange={(e) =>
+                setNewComments((prev) => ({
+                  ...prev,
+                  project3: e.target.value,
+                }))
+              }
+              required
+            ></textarea>
+            <button type="submit">Envoyer</button>
+          </form>
+          <ul>
+            {comments['project3']?.map((comment) => (
+              <li key={comment.id}>
+                <strong>{comment.author} :</strong> {comment.text}
+                <button 
+                  onClick={() => handleDeleteComment(comment.id, 'project3')} 
+                  className="delete-btn admin-only"
+                  title="Suppression réservée à l'administrateur"
+                >
+                  🗑️
+                </button>
               </li>
             ))}
           </ul>
