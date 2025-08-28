@@ -151,6 +151,8 @@ app.delete('/comments/:id', (req, res) => {
 // Fonction pour envoyer un email de notification
 const sendNotificationEmail = async (type, data) => {
   try {
+    console.log('🚀 Tentative envoi email...', { type, to: ADMIN_EMAIL });
+    
     let subject, html;
     
     if (type === 'visit') {
@@ -194,10 +196,17 @@ const sendNotificationEmail = async (type, data) => {
       html: html
     };
 
+    console.log('📤 Envoi email avec options:', {
+      from: process.env.EMAIL_USER,
+      to: ADMIN_EMAIL,
+      subject: subject
+    });
+
     await transporter.sendMail(mailOptions);
     console.log(`✅ Email de notification envoyé pour : ${type}`);
   } catch (error) {
     console.error('❌ Erreur envoi email:', error);
+    console.error('❌ Détails:', error.message);
   }
 };
 
@@ -207,11 +216,28 @@ app.post('/notify', async (req, res) => {
     const { type, data } = req.body;
     
     console.log(`📧 Notification reçue - Type: ${type}`);
+    console.log('📊 Variables email configurées:', {
+      EMAIL_USER: process.env.EMAIL_USER ? '✅ Configuré' : '❌ Manquant',
+      EMAIL_PASS: process.env.EMAIL_PASS ? '✅ Configuré' : '❌ Manquant',
+      ADMIN_EMAIL: ADMIN_EMAIL
+    });
+    
+    // Vérifier si les variables email sont configurées
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.log('⚠️ Variables email manquantes, email non envoyé');
+      return res.status(200).json({ 
+        message: 'Notification reçue mais email non configuré',
+        emailConfigured: false
+      });
+    }
     
     // Envoyer l'email de notification
     await sendNotificationEmail(type, data);
     
-    res.status(200).json({ message: 'Notification envoyée avec succès' });
+    res.status(200).json({ 
+      message: 'Notification envoyée avec succès',
+      emailConfigured: true
+    });
   } catch (error) {
     console.error('Erreur notification:', error);
     res.status(500).json({ error: 'Erreur lors de l\'envoi de la notification' });

@@ -97,12 +97,18 @@ function ProjectsPage() {
       trackEvent('comment_submitted', 'Projects', projectId);
       
       // Envoyer une notification email
-      await sendEmailNotification('comment', {
-        projectId,
-        author: authors[projectId],
-        text: newComments[projectId],
-        timestamp: new Date().toISOString(),
-      });
+      console.log('🚀 Tentative envoi notification email...');
+      try {
+        await sendEmailNotification('comment', {
+          projectId,
+          author: authors[projectId],
+          text: newComments[projectId],
+          timestamp: new Date().toISOString(),
+        });
+        console.log('✅ Notification email envoyée avec succès');
+      } catch (emailError) {
+        console.error('❌ Erreur notification email:', emailError);
+      }
 
       // Met à jour les commentaires pour ce projet
       setComments((prev) => ({

@@ -33,26 +33,39 @@ export const trackEvent = (action, category = 'User Interaction', label = '', va
 
 // Fonction pour envoyer une notification par email
 export const sendEmailNotification = async (type, data) => {
+  console.log('📧 sendEmailNotification appelée avec:', { type, data });
+  
   try {
+    const payload = {
+      type,
+      data,
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      url: window.location.href,
+    };
+    
+    console.log('📤 Envoi vers /notify avec payload:', payload);
+    
     const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || 'https://portfolio-hwg8.onrender.com'}/notify`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        type,
-        data,
-        timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent,
-        url: window.location.href,
-      }),
+      body: JSON.stringify(payload),
     });
     
+    console.log('📨 Réponse serveur:', response.status, response.statusText);
+    
     if (!response.ok) {
-      console.error('Erreur envoi notification email');
+      console.error('❌ Erreur envoi notification email - Status:', response.status);
+      const errorText = await response.text();
+      console.error('❌ Détails erreur:', errorText);
+    } else {
+      const result = await response.json();
+      console.log('✅ Succès notification:', result);
     }
   } catch (error) {
-    console.error('Erreur notification email:', error);
+    console.error('❌ Erreur notification email:', error);
   }
 };
 
