@@ -1,19 +1,113 @@
 import './style.css'
 
+const EXPERIENCES = [
+  {
+    date: 'Juin 2026 - Oct. 2026',
+    title: 'Research Engineer (stage)',
+    company: 'LIGM / DICIEN, Université Gustave Eiffel',
+    location: 'Champs-sur-Marne · Projet ComplexeID',
+    current: true,
+    description:
+      "Mesure et caractérisation de la similarité entre exercices de programmation pour la recommandation d'exercices pédagogiques (BUT Informatique), via des approches hybrides NLP, graphes et AST.",
+    points: [
+      'Extraction de représentations de code (AST, graphes de dépendances) avec tree-sitter et NetworkX',
+      'Embeddings de code et de texte avec GraphCodeBERT, CodeBERT et SBERT, comparés à des baselines TF-IDF',
+      'Évaluation expérimentale et veille bibliographique (Zotero)'
+    ],
+    stack: 'Python, tree-sitter, HuggingFace, NetworkX, NumPy, scikit-learn'
+  },
+  {
+    date: 'Juin 2025 - Août 2025',
+    title: 'Développeur Full Stack & IA (stage)',
+    company: 'Bleu Reflet',
+    location: 'Station F, Paris',
+    description: "Virtual try-on : simulation réaliste de colliers sur des photos haute résolution.",
+    points: [
+      'Modèle YOLOv8 personnalisé (Roboflow) pour la segmentation du cou',
+      'Fusion avec Mediapipe Face Mesh (478 points clés) dans un pipeline de vision unique',
+      'API Flask + frontend React déployés sur VPS (NGINX reverse proxy, SSL)'
+    ],
+    stack: 'Python, OpenCV, Ultralytics, TypeScript, React, GitLab, Jira'
+  },
+  {
+    date: 'Oct. 2023 - Présent',
+    title: 'Mentor & Enseignant particulier',
+    company: 'Département des Yvelines + Complétude',
+    location: 'Yvelines',
+    description:
+      'Accompagnement en mathématiques et physique du secondaire au supérieur : programmes de révision sur mesure, préparation Bac et Brevet.'
+  }
+];
+
+const SKILLS = [
+  {
+    icon: 'bx bx-brain',
+    title: 'IA / Deep Learning',
+    tags: ['PyTorch', 'TensorFlow', 'Keras', 'YOLOv8', 'Mediapipe', 'OpenCV', 'scikit-learn', 'XGBoost', 'MLflow', 'Deep RL']
+  },
+  {
+    icon: 'bx bx-bot',
+    title: 'NLP, LLM & Agents',
+    tags: ['HuggingFace', 'GraphCodeBERT', 'CodeBERT', 'SBERT', 'LangChain', 'RAG', 'ChromaDB', 'Agents multi-services', 'tree-sitter']
+  },
+  {
+    icon: 'bx bx-data',
+    title: 'Data Engineering',
+    tags: ['PySpark', 'Pandas', 'SQL', 'PostgreSQL', 'MongoDB', 'ETL', 'PowerBI', 'W&B', 'GCP', 'AWS', 'Azure']
+  },
+  {
+    icon: 'bx bx-server',
+    title: 'Backend & Intégration',
+    tags: ['FastAPI', 'Flask', 'Django', 'Node.js (Express)', 'Spring Boot', 'REST', 'SSE', 'RabbitMQ', 'Kafka']
+  },
+  {
+    icon: 'bx bx-code-curly',
+    title: 'Frontend',
+    tags: ['React', 'TypeScript', 'Angular', 'Vue.js', 'Blazor (.NET)', 'HTML5/CSS3', 'Tailwind']
+  },
+  {
+    icon: 'bx bx-git-merge',
+    title: 'DevOps & Automatisation',
+    tags: ['Docker', 'Kubernetes', 'GitHub Actions', 'GitLab CI', 'NGINX', 'Linux', 'SonarQube', 'n8n', 'Airtable']
+  },
+  {
+    icon: 'bx bx-chip',
+    title: 'HPC & Performance',
+    tags: ['C/C++', 'Rust', 'Assembleur x86', 'OpenMP', 'MAQAO', 'Valgrind', 'perf', 'GCC/Clang']
+  },
+  {
+    icon: 'bx bx-code-alt',
+    title: 'Langages',
+    tags: ['Python', 'Java 21', 'TypeScript', 'JavaScript', 'C/C++', 'C#', 'Rust', 'SQL', 'Bash', 'OCaml', 'R']
+  },
+  {
+    icon: 'bx bx-cog',
+    title: 'Gestion de projet',
+    tags: ['Scrum', 'Kanban', 'Cycle en V', 'Jira', 'GitHub Projects', 'Documentation technique']
+  }
+];
+
 function AboutPage() {
   return (
     <section className="about-modern">
       <div className="about-container">
         <h1 className="about-title">À propos de moi</h1>
-        
+
         {/* Section de présentation personnelle */}
         <div className="about-intro">
           <div className="intro-card">
             <h2>Qui suis-je ?</h2>
             <p className="intro-text">
-              Étudiant en dernière année d'école d'ingénieur ayant une solide formation en mathématiques, 
-              physiques et en informatique avec une forte aptitude à acquérir de nouvelles connaissances. 
-              Capable à la fois de travailler en équipe et de fonctionner de manière autonome.
+              Élève-ingénieur en dernière année à l'ISTY (UVSQ / Université Paris-Saclay), spécialisé en IA et
+              développement logiciel. Après une prépa MP et deux expériences en IA appliquée (recherche au LIGM,
+              Computer Vision en startup à Station F), je recherche un <strong>CDI ou CDD à partir de juin 2027</strong> en
+              tant qu'<strong>AI/ML Engineer</strong> ou <strong>Software Engineer</strong> : full-stack avec intégration
+              d'IA, agents, automatisation, MLOps.
+            </p>
+            <p className="intro-text">
+              Ce qui me motive : les systèmes complexes, transformer un modèle en produit qui tourne en production,
+              et la recherche appliquée. Autonome rapidement, rigoureux, à l'aise en équipe comme en autonomie.
+              Ancien capitaine et MVP de l'équipe championne universitaire de basket-ball (2023).
             </p>
             <div className="languages-section">
               <h3>Compétences Linguistiques</h3>
@@ -21,12 +115,12 @@ function AboutPage() {
                 <div className="language-item">
                   <span className="language-flag">🇫🇷</span>
                   <span className="language-name">Français</span>
-                  <span className="language-level">Courant</span>
+                  <span className="language-level">Langue maternelle</span>
                 </div>
                 <div className="language-item">
                   <span className="language-flag">🇬🇧</span>
                   <span className="language-name">Anglais</span>
-                  <span className="language-level">Technique B1/B2</span>
+                  <span className="language-level">Professionnel</span>
                 </div>
                 <div className="language-item">
                   <span className="language-flag">🇪🇸</span>
@@ -38,27 +132,62 @@ function AboutPage() {
           </div>
         </div>
 
+        {/* Section Expériences */}
+        <div className="education-section">
+          <h2 className="section-title">
+            <i className='bx bx-briefcase'></i>
+            Expériences Professionnelles
+          </h2>
+
+          <div className="education-timeline">
+            {EXPERIENCES.map((experience) => (
+              <div key={experience.title} className={`education-item${experience.current ? ' current' : ''}`}>
+                <div className="education-date">{experience.date}</div>
+                <div className="education-content">
+                  <div className="institution">
+                    <h3>{experience.title}</h3>
+                    <p className="location">{experience.company} · {experience.location}</p>
+                  </div>
+                  <div className="degree">
+                    <p className="description">{experience.description}</p>
+                    {experience.points && (
+                      <ul className="experience-points">
+                        {experience.points.map((point) => (
+                          <li key={point}>{point}</li>
+                        ))}
+                      </ul>
+                    )}
+                    {experience.stack && (
+                      <p className="experience-stack"><strong>Stack :</strong> {experience.stack}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Section Parcours */}
         <div className="education-section">
           <h2 className="section-title">
             <i className='bx bxs-graduation'></i>
             Parcours Académique
           </h2>
-          
+
           <div className="education-timeline">
             <div className="education-item current">
-              <div className="education-date">2023 - 2026</div>
+              <div className="education-date">2023 - 2027</div>
               <div className="education-content">
                 <div className="institution">
                   <h3>ISTY, École d'ingénieurs</h3>
-                  <p className="location">UVSQ-Paris-Saclay, Yvelines, France</p>
+                  <p className="location">UVSQ / Université Paris-Saclay, Yvelines, France</p>
                 </div>
                 <div className="degree">
                   <h4>Diplôme d'ingénieur, spécialité informatique</h4>
-                  <p className="status">Actuellement en 5ème année</p>
+                  <p className="status">Dernière année · Diplôme en 2027</p>
                   <p className="description">
-                    Formation d'ingénieurs polyvalents en informatique (systèmes de décision, 
-                    développement logiciels, technologies informatiques, ...).
+                    IA, Big Data, HPC, cybersécurité, programmation parallèle et distribuée, recherche
+                    opérationnelle, profiling et optimisation de code, réseaux mobiles et véhiculaires.
                   </p>
                 </div>
               </div>
@@ -72,10 +201,10 @@ function AboutPage() {
                   <p className="location">Libreville, Gabon</p>
                 </div>
                 <div className="degree">
-                  <h4>Classes préparatoires aux grandes écoles (CPGE)</h4>
+                  <h4>CPGE MPSI / MP option Informatique</h4>
                   <p className="description">
-                    Programme intensif de préparation aux concours d'entrée dans les 
-                    écoles d'ingénieurs françaises.
+                    Préparation intensive aux concours d'entrée des grandes écoles d'ingénieurs françaises.
+                    Champion universitaire de basket-ball 2023 (capitaine et MVP).
                   </p>
                 </div>
               </div>
@@ -89,170 +218,33 @@ function AboutPage() {
             <i className='bx bx-code-alt'></i>
             Compétences Techniques
           </h2>
-          
+
           <div className="skills-grid">
-            <div className="skill-category">
-              <div className="category-header">
-                <i className='bx bx-code-curly'></i>
-                <h3>Langages de programmation</h3>
+            {SKILLS.map((category) => (
+              <div key={category.title} className="skill-category">
+                <div className="category-header">
+                  <i className={category.icon}></i>
+                  <h3>{category.title}</h3>
+                </div>
+                <div className="skills-list">
+                  {category.tags.map((tag) => (
+                    <span key={tag} className="skill-tag">{tag}</span>
+                  ))}
+                </div>
               </div>
-              <div className="skills-list">
-                <span className="skill-tag">Python</span>
-                <span className="skill-tag">C/C++</span>
-                <span className="skill-tag">Java21</span>
-                <span className="skill-tag">JavaScript</span>
-                <span className="skill-tag">TypeScript</span>
-                <span className="skill-tag">OCaml</span>
-                <span className="skill-tag">SQL</span>
-                <span className="skill-tag">Bash</span>
-                <span className="skill-tag">Assembleur (x86)</span>
-                <span className="skill-tag">Rust</span>
-                <span className="skill-tag">C#</span>
-              </div>
-            </div>
+            ))}
+          </div>
+        </div>
 
-            <div className="skill-category">
-              <div className="category-header">
-                <i className='bx bx-globe'></i>
-                <h3>Développement web</h3>
-              </div>
-              <div className="skills-list">
-                <span className="skill-tag">HTML5</span>
-                <span className="skill-tag">CSS3</span>
-                <span className="skill-tag">JavaScript</span>
-                <span className="skill-tag">TypeScript</span>
-                <span className="skill-tag">PHP</span>
-                <span className="skill-tag">Angular</span>
-                <span className="skill-tag">Vue.js</span>
-                <span className="skill-tag">Node.js</span>
-                <span className="skill-tag">Express.js</span>
-                <span className="skill-tag">Ruby</span>
-              </div>
-            </div>
-
-            <div className="skill-category">
-              <div className="category-header">
-                <i className='bx bx-data'></i>
-                <h3>Data Science & IA</h3>
-              </div>
-              <div className="skills-list">
-                <span className="skill-tag">Microsoft Azure</span>
-                <span className="skill-tag">Python (Pandas, Matplotlib, Seaborn)</span>
-                <span className="skill-tag">R (ggplot2, dplyr, R Markdown)</span>
-                <span className="skill-tag">PowerBI</span>
-                <span className="skill-tag">SQL</span>
-              </div>
-            </div>
-
-            <div className="skill-category">
-              <div className="category-header">
-                <i className='bx bx-cylinder'></i>
-                <h3>Bases de données</h3>
-              </div>
-              <div className="skills-list">
-                <span className="skill-tag">PostgreSQL</span>
-                <span className="skill-tag">MySQL</span>
-                <span className="skill-tag">MongoDB</span>
-                <span className="skill-tag">NoSQL</span>
-                <span className="skill-tag">SQL</span>
-              </div>
-            </div>
-
-            <div className="skill-category">
-              <div className="category-header">
-                <i className='bx bx-brain'></i>
-                <h3>Machine Learning & Deep Learning</h3>
-              </div>
-              <div className="skills-list">
-                <span className="skill-tag">TensorFlow</span>
-                <span className="skill-tag">PyTorch</span>
-                <span className="skill-tag">MediaPipe</span>
-                <span className="skill-tag">Roboflow</span>
-                <span className="skill-tag">Ultralytics YOLOv8</span>
-                <span className="skill-tag">Modélisation</span>
-                <span className="skill-tag">Visualisation</span>
-                <span className="skill-tag">Reporting automatisé</span>
-              </div>
-            </div>
-
-            <div className="skill-category">
-              <div className="category-header">
-                <i className='bx bx-library'></i>
-                <h3>Frameworks & Bibliothèques</h3>
-              </div>
-              <div className="skills-list">
-                <span className="skill-tag">Maven</span>
-                <span className="skill-tag">Pytest</span>
-                <span className="skill-tag">Unittest</span>
-                <span className="skill-tag">JUnit</span>
-                <span className="skill-tag">Rustworkx</span>
-                <span className="skill-tag">Networkx</span>
-                <span className="skill-tag">ggplot2</span>
-                <span className="skill-tag">tidyverse</span>
-                <span className="skill-tag">OpenCV</span>
-                <span className="skill-tag">OpenMP</span>
-                <span className="skill-tag">ROS</span>
-              </div>
-            </div>
-
-            <div className="skill-category">
-              <div className="category-header">
-                <i className='bx bx-server'></i>
-                <h3>Conteneurisation & DevOps</h3>
-              </div>
-              <div className="skills-list">
-                <span className="skill-tag">Docker</span>
-                <span className="skill-tag">Kubernetes</span>
-                <span className="skill-tag">GitHub Actions (CI/CD)</span>
-              </div>
-            </div>
-
-            <div className="skill-category">
-              <div className="category-header">
-                <i className='bx bx-cloud'></i>
-                <h3>Déploiement & Hébergement web</h3>
-              </div>
-              <div className="skills-list">
-                <span className="skill-tag">Render</span>
-                <span className="skill-tag">NGINX</span>
-                <span className="skill-tag">VPS Linux</span>
-                <span className="skill-tag">Configuration de domaine</span>
-                <span className="skill-tag">Sécurisation HTTPS</span>
-              </div>
-            </div>
-
-            <div className="skill-category">
-              <div className="category-header">
-                <i className='bx bx-terminal'></i>
-                <h3>Systèmes & Optimisation</h3>
-              </div>
-              <div className="skills-list">
-                <span className="skill-tag">Unix/Linux</span>
-                <span className="skill-tag">Scripts Bash</span>
-                <span className="skill-tag">Gestion des processus</span>
-                <span className="skill-tag">GCC</span>
-                <span className="skill-tag">Clang</span>
-                <span className="skill-tag">ICX</span>
-                <span className="skill-tag">Makefile</span>
-                <span className="skill-tag">MAQAO</span>
-                <span className="skill-tag">Vintel</span>
-                <span className="skill-tag">Valgrind</span>
-                <span className="skill-tag">perf</span>
-              </div>
-            </div>
-
-            <div className="skill-category">
-              <div className="category-header">
-                <i className='bx bx-cog'></i>
-                <h3>Gestion de projet</h3>
-              </div>
-              <div className="skills-list">
-                <span className="skill-tag">Méthodes agiles (Scrum, Kanban)</span>
-                <span className="skill-tag">Cycle en V</span>
-                <span className="skill-tag">GitHub Projects</span>
-                <span className="skill-tag">Documentation technique</span>
-              </div>
-            </div>
+        {/* Section Certifications */}
+        <div className="skills-section">
+          <h2 className="section-title">
+            <i className='bx bx-award'></i>
+            Certifications
+          </h2>
+          <div className="skills-list">
+            <span className="skill-tag">Machine Learning / Deep Learning Specialization · DeepLearning.AI & Stanford Online (2025)</span>
+            <span className="skill-tag">MATLAB · MathWorks (2025)</span>
           </div>
         </div>
       </div>

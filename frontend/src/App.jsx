@@ -38,7 +38,7 @@ function App() {
           <nav className="navbar">
             <Link to="/" className="active">Accueil</Link>
             <Link to="/about">À propos</Link>
-            <Link to="/services">Services</Link>
+            <Link to="/services">Expertise</Link>
             <Link to="/projects">Projets</Link>
             <Link to="/contact">Contact</Link>
           </nav>

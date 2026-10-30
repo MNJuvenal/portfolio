@@ -18,14 +18,6 @@ const transporter = nodemailer.createTransport({
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'juvenal.moussavou@gmail.com'; // Votre email pour recevoir les notifications
 
-// Base de données en mémoire pour les statistiques
-let visitorStats = {
-  totalVisits: 0,
-  todayVisits: 0,
-  lastResetDate: new Date().toDateString(),
-  visitsToday: []
-};
-
 // Middleware
 app.use(cors({
   origin: true, // Temporaire: autorise toutes les origines pour les tests
@@ -34,6 +26,9 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(bodyParser.json());
+
+// Statistiques LeetCode / Deep-ML et badges SVG dynamiques
+app.use('/api', require('./badges').router);
 
 // Simuler une base de données en mémoire
 let comments = [];
@@ -77,47 +72,6 @@ app.post('/comments/:id/reply', (req, res) => {
   } else {
     res.status(404).json({ error: 'Commentaire non trouvé' });
   }
-});
-
-// Fonction pour réinitialiser les stats quotidiennes
-const resetDailyStats = () => {
-  const today = new Date().toDateString();
-  if (visitorStats.lastResetDate !== today) {
-    visitorStats.todayVisits = 0;
-    visitorStats.visitsToday = [];
-    visitorStats.lastResetDate = today;
-  }
-};
-
-// Route pour récupérer les statistiques de visiteurs
-app.get('/stats', (req, res) => {
-  resetDailyStats();
-  
-  // Compter les visiteurs uniques aujourd'hui
-  const uniqueVisitorsToday = new Set(visitorStats.visitsToday).size;
-  
-  res.json({
-    totalVisits: visitorStats.totalVisits,
-    todayVisits: uniqueVisitorsToday,
-    onlineNow: Math.floor(Math.random() * 3) + 1 // Simulation simple
-  });
-});
-
-// Route pour enregistrer une visite
-app.post('/visit', (req, res) => {
-  const visitorIP = req.ip || req.connection.remoteAddress || 'unknown';
-  
-  resetDailyStats();
-  
-  // Incrémenter le compteur total
-  visitorStats.totalVisits++;
-  
-  // Ajouter à la liste d'aujourd'hui (pour les visiteurs uniques)
-  visitorStats.visitsToday.push(visitorIP);
-  
-  console.log('📊 Nouvelle visite enregistrée. Total:', visitorStats.totalVisits);
-  
-  res.json({ success: true, totalVisits: visitorStats.totalVisits });
 });
 
 // Route pour supprimer un commentaire (réservé à l'admin)

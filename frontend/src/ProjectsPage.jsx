@@ -5,6 +5,73 @@ import { trackEvent, sendEmailNotification } from './analytics';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://portfolio-hwg8.onrender.com';
 
+// Autres projets (recherche, IA, agents, software engineering)
+const OTHER_PROJECTS = [
+  {
+    title: 'Similarité de code par graphes (LIGM)',
+    category: 'Recherche · NLP & Graphes',
+    description: "Mesure de similarité entre programmes Python via graphes de dépendances (PDG : CFG + DDG) et approches hybrides avec embeddings de code.",
+    stack: ['Python', 'tree-sitter', 'NetworkX', 'GraphCodeBERT'],
+    url: 'https://github.com/MNJuvenal/code-similarity-pdg-ged'
+  },
+  {
+    title: 'IA-Orchestrator',
+    category: 'Agents · Microservices',
+    description: 'Orchestration de plusieurs agents IA en microservices, avec communication asynchrone par file de messages, REST et SSE.',
+    stack: ['Spring Boot', 'Python', 'Blazor/.NET', 'RabbitMQ', 'PostgreSQL', 'Docker'],
+    url: 'https://github.com/MNJuvenal/ia_orchestrator'
+  },
+  {
+    title: 'Chatbot RAG (Qwen)',
+    category: 'LLM · RAG',
+    description: 'Chatbot de questions-réponses sur une base de connaissances personnalisée, avec recherche documentaire en temps réel.',
+    stack: ['Python', 'LangChain', 'HuggingFace', 'ChromaDB'],
+    url: 'https://github.com/MNJuvenal/chatbot-qwen'
+  },
+  {
+    title: 'Agent T-Rex (Deep RL)',
+    category: 'Reinforcement Learning',
+    description: "Agent de Deep Reinforcement Learning qui maîtrise le jeu T-Rex de Chrome : >95% de survie, reward shaping, obstacles complexes.",
+    stack: ['PyTorch', 'Pygame', 'Python'],
+    url: 'https://github.com/MNJuvenal/T-RexWithAi'
+  },
+  {
+    title: 'Pipeline Vision DL (CIFAR-10)',
+    category: 'Computer Vision',
+    description: "Classification d'images : transfer learning, augmentation de données et évaluation complète des métriques.",
+    stack: ['PyTorch', 'torchvision', 'scikit-learn'],
+    url: 'https://github.com/MNJuvenal/Projet_Vision_CIFAR10'
+  },
+  {
+    title: 'Prédiction de Churn',
+    category: 'Machine Learning · MLOps',
+    description: 'Prédiction du départ client avec feature engineering avancé et suivi des expériences dans MLflow.',
+    stack: ['XGBoost', 'Pandas', 'scikit-learn', 'MLflow'],
+    url: 'https://github.com/MNJuvenal/Pr-diction-de-Churn-avec-XGBoost'
+  },
+  {
+    title: 'Gestion de Bibliothèque (Java)',
+    category: 'Software Engineering',
+    description: 'Application en architecture N-tiers (Modèle-Service-Repository) appliquant les principes POO et SOLID.',
+    stack: ['Java 21', 'POO/SOLID', 'CLI', 'Git'],
+    url: 'https://github.com/MNJuvenal/Library-management_V2'
+  },
+  {
+    title: 'Profilage & optimisation de code',
+    category: 'HPC · Performance',
+    description: "Profilage puis optimisation d'un code C de calcul intensif avec les outils d'analyse de performance.",
+    stack: ['C', 'MAQAO', 'perf', 'GCC/Clang'],
+    url: 'https://github.com/MNJuvenal/Profilage-optimisation-de-code'
+  },
+  {
+    title: 'Solutions LeetCode & Deep-ML',
+    category: 'Algorithmique · ML from scratch',
+    description: "Mes solutions commentées d'algorithmique (LeetCode) et d'implémentations ML from scratch (Deep-ML).",
+    stack: ['Python', 'Java', 'NumPy'],
+    url: 'https://github.com/MNJuvenal/deep-ml'
+  }
+];
+
 
 function ProjectsPage() {
   const [comments, setComments] = useState({}); // Stocke les commentaires par projet
@@ -186,6 +253,10 @@ function ProjectsPage() {
   return (
     <section className="projects">
       <h1 className="text-4xl font-bold text-center my-12">Mes Projets</h1>
+      <p className="projects-intro">
+        Une sélection de projets en IA, agents, full-stack et software engineering.
+        Tout le code est disponible sur <a href="https://github.com/MNJuvenal" target="_blank" rel="noopener noreferrer">mon GitHub</a>.
+      </p>
 
       {/* Projet 1 */}
       <div className="project-card">
@@ -362,7 +433,7 @@ function ProjectsPage() {
           </p>
           
           <div className="project-links">
-            <a href="https://github.com/MNJuvenal/plagiatapp" target="_blank" rel="noopener noreferrer" className="github-link">
+            <a href="https://github.com/MNJuvenal/plagiat-app" target="_blank" rel="noopener noreferrer" className="github-link">
               📂 Voir le code source
             </a>
           </div>
@@ -471,7 +542,7 @@ function ProjectsPage() {
       <div className="project-card">
         <h3>Projet 3 : 💎 BLUEREFLET - Application d'Essayage Virtuel de Colliers</h3>
         <div className="project-stage-info">
-          <span className="stage-badge">🎓 Projet de Stage</span>
+          <span className="stage-badge">💼 Expérience en entreprise</span>
           <span className="company-name">Entreprise : BLUEREFLET</span>
         </div>
         
@@ -615,6 +686,32 @@ function ProjectsPage() {
               </li>
             ))}
           </ul>
+        </div>
+      </div>
+
+      {/* Autres projets */}
+      <div className="other-projects">
+        <h2>Autres projets</h2>
+        <div className="other-projects-grid">
+          {OTHER_PROJECTS.map((project) => (
+            <a
+              key={project.title}
+              href={project.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="other-project-card"
+            >
+              <span className="other-project-category">{project.category}</span>
+              <h3>{project.title}</h3>
+              <p>{project.description}</p>
+              <div className="other-project-stack">
+                {project.stack.map((tech) => (
+                  <span key={tech}>{tech}</span>
+                ))}
+              </div>
+              <span className="other-project-link"><i className='bx bxl-github'></i> Voir le code →</span>
+            </a>
+          ))}
         </div>
       </div>
     </section>
