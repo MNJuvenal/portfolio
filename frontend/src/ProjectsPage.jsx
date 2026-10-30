@@ -1,7 +1,7 @@
 import './style.css';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { trackEvent, sendEmailNotification } from './analytics';
+import { trackEvent } from './analytics';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://portfolio-hwg8.onrender.com';
 
@@ -163,20 +163,6 @@ function ProjectsPage() {
       // Tracker l'événement dans Google Analytics
       trackEvent('comment_submitted', 'Projects', projectId);
       
-      // Envoyer une notification email
-      console.log('🚀 Tentative envoi notification email...');
-      try {
-        await sendEmailNotification('comment', {
-          projectId,
-          author: authors[projectId],
-          text: newComments[projectId],
-          timestamp: new Date().toISOString(),
-        });
-        console.log('✅ Notification email envoyée avec succès');
-      } catch (emailError) {
-        console.error('❌ Erreur notification email:', emailError);
-      }
-
       // Met à jour les commentaires pour ce projet
       setComments((prev) => ({
         ...prev,
